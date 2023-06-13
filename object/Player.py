@@ -12,6 +12,9 @@ class Player(Objects.Object3D):
     godPunch=False
     climb=False
     climbYStar=0
+    fatality=False
+    timeFatality=90
+
 
     #character for weapon
     weapon=0
@@ -31,7 +34,7 @@ class Player(Objects.Object3D):
     boostDash=16
 
 
-    alarm=[timeDodge] 
+    alarm=[timeDodge,timeFatality] 
 
     #player weapon 
     def __init__(self,playerCamera):
@@ -77,14 +80,7 @@ class Player(Objects.Object3D):
                 self.chooseWeapon()
 
     def chooseWeapon(self):
-        destroy(self.weapon.animation)
-        destroy(self.weapon)
-        if self.inventary.index==0:
-            self.weapon=Weapon.Gun(self)
-        elif self.inventary.index==1:
-            self.weapon=Weapon.Shongunt(self)
-        else:
-            self.weapon=Weapon.Gun(self)
+        self.changeWeapon(self.inventary.index)
         self.weapon.recharge=False
         self.weapon.pickUpTheWeapon()
 
@@ -118,6 +114,34 @@ class Player(Objects.Object3D):
         if self.weapon.star:
             self.weapon.animation.visible=self.playerCamera.climb
 
+    def create_a_fatality(self):
+        if self.fatality:
+            if self.alarm[1]>0:
+                self.alarm[1]-=1
+                self.playerCamera.fatality=self.fatality
+            else:
+                self.alarm[1]=self.timeFatality
+                self.fatality=False
+
+                self.playerCamera.fatality=self.fatality
+                self.changeWeapon(0)
+            
+
+    def changeWeapon(self,weapon):
+        destroy(self.weapon.animation)
+        destroy(self.weapon) 
+        
+        if weapon==0:
+            self.weapon=Weapon.Gun(self)
+        elif weapon==1:
+            self.weapon=Weapon.Shongunt(self)
+        elif weapon==2:
+            self.weapon=Weapon.Shongunt(self)
+        elif weapon==3:
+            self.weapon=Weapon.Gun(self)
+        else:
+            pass 
+
     #---------------physical--------------------------------
     def Physical(self):
         pass#self.Dash() 
@@ -129,6 +153,7 @@ class Player(Objects.Object3D):
         self.openMenu()
         self.SeeIfThePlayerIsClimb()
         self.drawInterface()
+        self.create_a_fatality()
 
 
 class Inventary():

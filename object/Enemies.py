@@ -15,6 +15,10 @@ class Enemy(Objects.ObjectButton):
     distPlayer=0
     audioWound='audio/enemy/nurse/wound.wav'
 
+    #fatalitys
+    fatality=True
+    sprs_fatalitys=[]
+
     '''
         texture='white_cube',
         model='cube',
@@ -64,18 +68,32 @@ class Enemy(Objects.ObjectButton):
                     self.audio_play_sound_with_distance_player(self.audioWound)
                     self.checkTheStun()
 
-            #if the player pick up to the enemy like hostage
-            if self.stunned and key=='e':
-                #delete the weapon of the player
-                destroy(self.player.weapon.animation)
-                destroy(self.player.weapon)
-                enemy=Objects.Draw.Draw_sprite(-.4,-.6,'sprite/Weapon/hostages/nurse/nurse.png',scale=(1.8,1.8,1.8))
-                self.player.weapon=Weapon.Hostages(self.player,enemy)
-                Objects.Draw.Transition()
-                
-                #delete to the enemy
-                destroy(self.animation)
-                destroy(self)
+            #we will watch if the player be to a radius of distance permitted for use the especial attacks
+            if self.distPlayer<=6:
+                #if the player pick up to the enemy like hostage
+                if self.stunned and key=='f':
+                    #delete the weapon of the player
+                    destroy(self.player.weapon.animation)
+                    destroy(self.player.weapon)
+                    enemy=Objects.Draw.Draw_sprite(-.4,-.6,'sprite/Weapon/hostages/nurse/nurse.png',scale=(1.8,1.8,1.8))
+                    self.player.weapon=Weapon.Hostages(self.player,enemy)
+                    Objects.Draw.Transition()
+                    
+                    #delete to the enemy
+                    destroy(self.animation)
+                    destroy(self)
+
+                #if the player would like be a fatality
+                if self.stunned and key=='e' and self.fatality:
+                    destroy(self.player.weapon.animation)
+                    destroy(self.player.weapon)
+                    #self.player.weapon=Weapon.Shongunt(self.player)
+                    self.player.weapon=Weapon.FatalityEnemy(self.player)
+                    self.player.fatality=True
+
+                    #delete to the enemy
+                    destroy(self.animation)
+                    destroy(self)
 
     def checkTheStun(self):
         #if the enemy reached his limit we can see if they will is stunned

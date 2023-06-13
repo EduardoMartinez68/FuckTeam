@@ -116,12 +116,13 @@ class Weapon(Objects.Object2DCam):
                 break
 
     def updateScaleForZoom(self):
-        if held_keys['right mouse']: #know if the player have the zoom on
-            self.animation.scale=(self.image_scale[0]*2,self.image_scale[1]*2,self.image_scale[2]*2)
-            #self.animation.texture=self.sprite_index_zoom
-        else:
-            self.animation.scale=(self.image_scale[0],self.image_scale[1],self.image_scale[2])
-            #self.animation.texture=self.sprite_index
+        if not self.player.fatality:
+            if held_keys['right mouse']: #know if the player have the zoom on
+                self.animation.scale=(self.image_scale[0]*2,self.image_scale[1]*2,self.image_scale[2]*2)
+                #self.animation.texture=self.sprite_index_zoom
+            else:
+                self.animation.scale=(self.image_scale[0],self.image_scale[1],self.image_scale[2])
+                #self.animation.texture=self.sprite_index
     
     def pickUpTheWeapon(self):
         self.animation.visible=True
@@ -319,6 +320,12 @@ class Hostages(Weapon):
         #-----------------new event
         if self.enemyLife>0:
             self.animationEnemy()
+
+class FatalityEnemy(Weapon):
+    sprite_index='sprite/Weapon/patadas/patada' 
+
+class FatalityEnemy1(Weapon):
+    sprite_index='sprite/Weapon/Shotgun/shotgun'  
 
 #--------
 class BulletDamage(Objects.Object2D):

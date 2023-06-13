@@ -1,5 +1,5 @@
 from ursina import *
-from ursina.prefabs.first_person_controller import FirstPersonController
+from FirstPersonController import FirstPersonController
 #--my libreary
 from object import Player, Block, Enemies
 from levels import readLevel as rl
@@ -10,7 +10,7 @@ app=Ursina()
 #we will create a player
 playerCamera=FirstPersonController(model='sphere',collider='box',origin=(5,0,5),position=(0,3,0)) #sphere
 p=Player.Player(playerCamera)
-camera.z=-5
+
 class Level():
     def __init__(self):
         pass 
@@ -88,7 +88,7 @@ def input(key):
 def updateCamera():
     camera.y=p.weapon.animation.y if p.weapon.star else camera.y
     if held_keys['right mouse']: #know if the player have the zoom on
-       if not p.weapon.name=='hostages': #if the player not have a hostage
+       if not p.weapon.name=='hostages' and not p.fatality: #if the player not have a hostage
             camera.fov=p.weapon.zoom
     else: 
         camera.fov=105 if p.playingRun() else 90
