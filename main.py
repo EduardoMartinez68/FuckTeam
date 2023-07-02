@@ -1,15 +1,12 @@
 from ursina import *
 from FirstPersonController import FirstPersonController
-#--my libreary
+#--my library
 from object import Player, Block, Enemies
 from levels import readLevel as rl
 from script import Draw
 
 
 app=Ursina()
-#we will create a player
-playerCamera=FirstPersonController(model='sphere',collider='box',origin=(5,0,5),position=(0,3,0)) #sphere
-p=Player.Player(playerCamera)
 
 class Level():
     def __init__(self):
@@ -63,6 +60,15 @@ class Level():
 
 nv=Level()
 nv.createMap('demo')
+
+#we will create a player
+playerCamera=FirstPersonController(model='sphere',collider='box',origin=(5,0,5),position=(0,3,0)) #sphere
+p=Player.Player(playerCamera)
+Enemies.Nurse(p,position=(4,1,5))
+
+
+
+'''
 Block.BrokenVoxel(p,position=(4,1,8))
 Block.Switches(p,position=(5,1,8))
 Block.SwitchWithTime(p,position=(7,1,8))
@@ -71,7 +77,7 @@ Block.Barrel(p,position=(4,3,5))
 
 #Enemies.Nurse(p,position=(5,50,7))
 
-'''
+
 for i in range(3):
     Block.Water(position=(4,i+1,6))
     Block.Water(position=(5,i+1,6))

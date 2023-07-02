@@ -58,6 +58,30 @@ class FirstPersonController(Entity):
         else:
             self.timeAcceleration=6
 
+        #camera shake effect
+        movCam=0
+        if  held_keys['d']:
+            movCam=1
+        elif held_keys['a']:
+            movCam=-1
+
+        #limit 
+        if movCam is not 0:
+            limitCam=4
+            self.camera_pivot.rotation_z+=.125*movCam*self.acceleration
+
+            if self.camera_pivot.rotation_z>=limitCam:
+                self.camera_pivot.rotation_z=limitCam
+            elif self.camera_pivot.rotation_z<=-limitCam:
+                self.camera_pivot.rotation_z=-limitCam 
+        else:
+            movCamStart=.125
+            if self.camera_pivot.rotation_z>0:
+                self.camera_pivot.rotation_z-=movCamStart
+            elif self.camera_pivot.rotation_z<0:
+                self.camera_pivot.rotation_z+=movCamStart
+            
+
     def seeIfCanClimb(self):
         wallBody=raycast(self.position+Vec3(0,0.5,0), self.direction, ignore=(self,), distance=.5, debug=False) 
         wallHead=raycast(self.position+Vec3(0,1,0), self.direction, ignore=(self,), distance=.5, debug=False)
@@ -210,7 +234,6 @@ class FirstPersonController(Entity):
         
         if mov==1:
             self.position += move_amount 
-
 
     def input(self, key):
         if key == 'space' or (key=='space hold' or key=='space up'):

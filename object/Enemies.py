@@ -87,7 +87,6 @@ class Enemy(Objects.ObjectButton):
                 if self.stunned and key=='e' and self.fatality:
                     destroy(self.player.weapon.animation)
                     destroy(self.player.weapon)
-                    #self.player.weapon=Weapon.Shongunt(self.player)
                     self.player.weapon=Weapon.FatalityEnemy(self.player)
                     self.player.fatality=True
 

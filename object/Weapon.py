@@ -188,6 +188,9 @@ class Weapon(Objects.Object2DCam):
                 else:
                     self.alarm[0]=30
                     self.recharge=True
+
+            #camera rotation 
+            self.animation.rotation_z=self.player.playerCamera.camera_pivot.rotation_z*2
         else:
             self.animationPickUpTheWeapon()
 
