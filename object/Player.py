@@ -7,6 +7,7 @@ class Player(Objects.Object3D):
     sprite_interface='interface/interface'
 
     #hability
+    life=10
     pause=False
     openInventory=False
     godPunch=False
@@ -37,7 +38,7 @@ class Player(Objects.Object3D):
     alarm=[timeDodge,timeFatality] 
 
     #player weapon 
-    def __init__(self,playerCamera):
+    def __init__(self,playerCamera,room):
         super().__init__(
             animation=Animation(
                             self.sprite_interface,
@@ -50,14 +51,21 @@ class Player(Objects.Object3D):
                             )
         ),
         self.playerCamera=playerCamera
+        self.room=room
         #self.hand=Weapon.StartingHands(self)
         self.weapon=Weapon.StartingHands(self) #Weapon.Gun(self) #Weapon.Weapon(self)
         self.inventary=Inventary()
-        self.drawDash=Draw.Draw_sprite(0,0,'sprite/lifeBar/dash/dash.png',scale=(1.8,1,1))
+        self.drawDash=Draw.Draw_animation_camera(0,0,'sprite/lifeBar/dash/dash',32,scale=(1.8,1,1))
+        self.blood_on_screen=[]
+
+        #Draw.Draw_sprite(0,0,'sprite/lifeBar/dash/dash-255.0003.png',scale=(1.8,1,1))
 
     #---------------interface--------------------------------
     def drawInterface(self):
         self.drawDash.alpha=1 if self.playerCamera.dash else 0
+        self.drawDash.animation.alpha=1 if self.playerCamera.dash else 0
+
+        self.draw_blood_on_screen()
     
     def openMenu(self):
         self.openInventory=True if held_keys['q'] else False
@@ -67,6 +75,23 @@ class Player(Objects.Object3D):
         else:
             self.inventary.setVisible(False)
             self.speed=self.speedNorm          
+
+    def draw_blood_on_screen(self):
+        for array_blood in self.blood_on_screen:
+            blood=array_blood[0]
+            alarm_blood=array_blood[1]
+            if alarm_blood>0:
+                self.alarm[0]-=time.dt
+                blood.alpha-=.005
+            else:
+                blood.visible=False
+                self.blood_on_screen.remove(array_blood) 
+                destroy(blood) 
+                
+    def set_life(self,add):
+        self.life+=add
+        self.life= self.life if self.life<10 else 10
+        self.life= self.life if self.life>1 else 0
 
     #---------------hability--------------------------------
     def input(self,key):
@@ -79,13 +104,41 @@ class Player(Objects.Object3D):
                 self.inventary.moveInventary(-1)
                 self.chooseWeapon()
 
+        if key=='e':
+            self.search_for_the_nearest_enemy()
+
+    def search_for_the_nearest_enemy(self):
+        if len(self.room.roomEnemy)>0 and not self.fatality:
+            nearestEnemyDistance=-1
+            nearestEnemy=self.room.roomEnemy[0]
+            limitDistance=4
+
+            for enemy in  self.room.roomEnemy:
+                distance_enemy=enemy.distPlayer
+                if self.check_what_the_player_can_do_a_fatality(distance_enemy,limitDistance,enemy):
+                    if nearestEnemyDistance==-1:
+                        nearestEnemy=enemy
+                        nearestEnemyDistance=distance_enemy
+                    elif distance_enemy<nearestEnemyDistance:
+                        nearestEnemy=enemy
+                        nearestEnemyDistance=distance_enemy
+                else:
+                    pass 
+
+            if self.check_what_the_player_can_do_a_fatality(nearestEnemy.distPlayer,limitDistance,nearestEnemy):
+                nearestEnemy.make_a_fatality() 
+                self.room.roomEnemy.remove(nearestEnemy)
+
+    def check_what_the_player_can_do_a_fatality(self,nearestEnemyDistance,limitDistance,enemy):
+        return nearestEnemyDistance<=limitDistance and enemy.fatality and enemy.stunned
+
     def chooseWeapon(self):
         self.changeWeapon(self.inventary.index)
         self.weapon.recharge=False
         self.weapon.pickUpTheWeapon()
 
     def playingRun(self):
-        return held_keys['shift'] and (held_keys['a'] or held_keys['d'] or held_keys['w'] or held_keys['s'])
+        return self.drawDash.animation.alpha #held_keys['shift'] and (held_keys['a'] or held_keys['d'] or held_keys['w'] or held_keys['s'])
 
     def weaponZoom(self):
         pass 
@@ -126,7 +179,6 @@ class Player(Objects.Object3D):
                 self.playerCamera.fatality=self.fatality
                 self.changeWeapon(0)
             
-
     def changeWeapon(self,weapon):
         destroy(self.weapon.animation)
         destroy(self.weapon) 

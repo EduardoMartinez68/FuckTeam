@@ -11,6 +11,25 @@ class Draw_sprite(Entity):
             scaleStar=scale
         )
 
+class Draw_animation_camera(Entity):
+    def __init__(self,x,y,sprite,image_speed,scale=(1,1,1)):
+        super().__init__(
+
+        )
+        self.animation=Animation(
+                            sprite,
+                            parent=camera.ui,
+                            fps=image_speed,
+                            loop=True,
+                            autoplay=True,
+                            model='quad',
+                            #Collider='box',
+                            #color=self.c_color,
+                            position=Vec2(x,y),
+                            rotation=Vec3(0,0,0),
+                            scale=scale,
+        )
+
 class Transition(Entity):
     def __init__(self):
         super().__init__(

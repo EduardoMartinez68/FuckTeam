@@ -1,6 +1,6 @@
 from ursina import *
-from script import Objects
-
+from script import Objects, Draw
+import random 
 class Weapon(Objects.Object2DCam):
     #character for weapon
     star=False
@@ -87,10 +87,11 @@ class Weapon(Objects.Object2DCam):
 
     #-------------------------------shooter---------------------------    
     def input(self,key):
-        if key=='left mouse down' and self.recharge: 
+        if key=='left mouse down' and self.recharge and not self.player.fatality: 
             self.animation.start() 
             self.recharge=False
             Audio(self.audio,loop=False,autoplay=True).volume=.5
+            
             #create a bullet damage
             BulletDamage(self.player,position=self.player.playerCamera.camera_pivot.world_position,rotation=self.player.playerCamera.camera_pivot.world_rotation)
 
@@ -134,7 +135,7 @@ class Weapon(Objects.Object2DCam):
 
     def animationOfWeapon(self):
         #see if the player is moving or is shooting up
-        if self.thePlayerIsMoving() and self.recharge:
+        if self.thePlayerIsMoving() and self.recharge and not self.player.fatality:
             self.animationInMov()
         else:
             self.animation.x=0
@@ -345,6 +346,7 @@ class BulletDamage(Objects.Object2D):
                 'sprite/Weapon/damage/damage8.png',
                 'sprite/Weapon/damage/damage9.png',
                 'sprite/Weapon/damage/damage10.png']
+    
     image_scale=(.3,.3,.3) #.3
     speed=60
     timeAlarm=1
@@ -359,7 +361,7 @@ class BulletDamage(Objects.Object2D):
             parent=scene,
             texture=self.sprite_wall[0],
             position=position,
-            model='cube',
+            model='quad',
             Collider='box',
             scale=self.image_scale,
             world_scale_z=self.image_scale[0],
@@ -399,12 +401,10 @@ class BulletDamage(Objects.Object2D):
 
     def moveBullet(self,world_position,forward):
         #move the bullet
-        ray=raycast(world_position,forward,distance=.5,ignore=(self,self.player,))
+        ray=raycast(world_position,forward,distance=.35,ignore=(self,self.player,))
         if not ray.hit:
             world_position+=forward*self.speed*time.dt
         else:
-            world_position+=forward*time.dt*self.speed
-            self.world_position=world_position
             self.chooseSkin(ray.entity.block)
             self.visible=True 
             self.run=False #exit loop

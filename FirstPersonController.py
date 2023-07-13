@@ -67,7 +67,7 @@ class FirstPersonController(Entity):
 
         #limit 
         if movCam is not 0:
-            limitCam=4
+            limitCam=2 #4
             self.camera_pivot.rotation_z+=.125*movCam*self.acceleration
 
             if self.camera_pivot.rotation_z>=limitCam:

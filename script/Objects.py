@@ -46,6 +46,54 @@ class ObjectCharacteristic(Entity):
 
     #resource
     resource=False
+    '''
+    def __init__(self, **kwargs):
+        super().__init__()
+        #------------------------------image characteristic 
+        self.sprite_index=''
+        self.image_index=0
+        self.image_speed=0
+        self.image_scale=(1,1,1)
+        self.image_alpha=1
+        self.image_rotation=(0,0,0)
+        self.c_color=color.color(0,0,random.uniform(0.9,1))
+        #-----------------------------programming characteristic
+        self.block=0
+        self.life=0
+        self.player=None 
+        self.weight=0
+        self.acceleration=0
+        self.animation=None
+        
+        #-----------------------------physical
+        self.MyPhysical=True
+        self.gravityOnEarth=.125 #/2
+        self.gravityOnWater=self.gravityOnEarth/6 #6
+        self.gravity=self.gravityOnEarth 
+
+        self.pushForce=0
+        self.friction=.125
+
+        self.timeAccelerationY=0
+        self.vspeed=0
+        self.hspeed=0 
+        self.speed=0
+        self.direction=0
+        self.angle=0
+
+        #maximum height
+        self.MHvi=0
+        self.MHvf=0
+
+        #maximum width
+        self.MWvi=0
+        self.MWvf=0
+        
+        #water
+        self.density=0
+
+        #resource
+        self.resource=False'''
 
     #---function audio 
     def audio_play_sound(self,audio,loop=False,volume=1):
