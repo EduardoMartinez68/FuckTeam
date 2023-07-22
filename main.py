@@ -3,10 +3,12 @@ from FirstPersonController import FirstPersonController
 #--my library
 from object import Player, Block, Enemies
 from levels import readLevel as rl
-from script import Draw
-
+from engine.script import Draw
+from ursina.shaders import texture_blend_shader,lit_with_shadows_shader
 
 app=Ursina()
+window.shader = True
+Entity.default_shader = lit_with_shadows_shader
 
 class Level():
     def __init__(self):
@@ -72,7 +74,29 @@ class Level():
 nv=Level()
 nv.createMap('demo')
 
+#shaders
 
+def load_shader(filename):
+    shader_path = os.getcwd()+'/shaders/'+filename+'.glsl'
+    if os.path.isfile(shader_path):
+        with open(shader_path, 'r') as file:
+            shader_code = file.read()
+            return Shader(language=Shader.GLSL, fragment=shader_code)
+    else:
+        print(f"El archivo de shader '{filename}' no existe.")
+        return None
+
+'''
+shader = load_shader('shadow')
+if shader:
+    light = PointLight(parent=scene)
+    light.position = nv.playerCamera.position #(5, 10, 5)
+    cube = Entity(model='cube', texture='brick', uvs=[[0, 0], [1, 0], [1, 1], [0, 1]],position=(2,1,2),shader=lit_with_shadows_shader)
+    cube2 = Entity(model='cube', texture='brick', uvs=[[0, 0], [1, 0], [1, 1], [0, 1]],position=(4,1,4),shader=texture_blend_shader)
+'''
+
+
+#end shaders
 def input(key):
     if key=='escape':
         exit()
@@ -80,12 +104,13 @@ def input(key):
 def updateCamera():
     camera.y=nv.p.weapon.animation.y if nv.p.weapon.star else camera.y
     if held_keys['right mouse']: #know if the player have the zoom on
-       if not p.weapon.name=='hostages' and not p.fatality: #if the player not have a hostage
+       if not nv.p.weapon.name=='hostages' and not nv.p.fatality: #if the player not have a hostage
             camera.fov=nv.p.weapon.zoom
     else: 
         camera.fov=105 if nv.p.playingRun() else 90
 
 def update():
+    #light.position = nv.playerCamera.position+(0,5,0)
+    #light.position = (mouse.x, mouse.y, light.position.z)
     updateCamera()
-
 app.run()

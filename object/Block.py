@@ -1,5 +1,5 @@
 from ursina import *
-from script import Objects
+from engine.script import Objects
 
 class Voxel(Objects.ObjectButton):
     MyPhysical=False

@@ -1,5 +1,6 @@
 from ursina import *
-from script import Physical,Draw
+from engine.script import Draw
+from engine.script import Physical
 class ObjectCharacteristic(Entity):
     #------------------------------image characteristic 
     sprite_index=''
@@ -25,6 +26,11 @@ class ObjectCharacteristic(Entity):
 
     pushForce=0
     friction=.125
+    frictionX=.25 
+    frictionY=.25 
+    mass=0 #kg
+    velocity_parabolic_mov=Vec3(0)
+    myFriction=0
 
     timeAccelerationY=0
     vspeed=0
@@ -115,11 +121,15 @@ class ObjectCharacteristic(Entity):
                 Physical.gravity(self)
 
         #parabolic movement
+        
         if self.hspeed>0:
             Physical.maximumHeight(self)
         if self.vspeed>0:
             Physical.maximumWidth(self)
         
+        Physical.parabolic_mov(self)
+
+
 
     def step(self):
         pass 

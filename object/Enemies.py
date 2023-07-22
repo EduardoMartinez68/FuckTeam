@@ -1,5 +1,6 @@
 from ursina import *
-from script import Objects, Draw
+from engine.script import Draw
+from engine.script import Objects
 from object import Weapon
 class Enemy(Objects.ObjectButton):
     block=1
@@ -18,6 +19,9 @@ class Enemy(Objects.ObjectButton):
     #fatalitys
     fatality=True
     sprs_fatalitys=[]
+
+    #physic (kg)
+    mass=34
 
     def __init__(self,player,position=(0,0,0),**kwargs):
         super().__init__(
@@ -168,11 +172,18 @@ class Enemy(Objects.ObjectButton):
         #global classes
         self.speedInventary()
         self.seeThePlayer()
-
+        self.follow_player()
         #if the enemy is not stunned then they can follow with his program
         if not self.stunned:
             self.characterOfTheEnemy()
         self.death()
+
+    def follow_player(self):
+        if not self.stunned:
+            aim=self.player.playerCamera
+            self.look_at_2d(aim)
+            newPosition=lerp(self.animation.position, aim.position, time.dt/4)#time.dt*2) 
+            self.animation.position = (newPosition[0], self.animation.position[1],newPosition[2])
 
 class Nurse(Enemy):
     scale=(2,4,1)

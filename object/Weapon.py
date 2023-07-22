@@ -1,5 +1,6 @@
 from ursina import *
-from script import Objects, Draw
+from engine.script import Draw
+from engine.script import Objects
 import random 
 class Weapon(Objects.Object2DCam):
     #character for weapon
@@ -292,6 +293,7 @@ class Hostages(Weapon):
     sprite_hostages='sprite/Weapon/hostages/nurse/nurse.png'
 
     enemyLife=10
+    mass=36 #72
 
     def animationEnemy(self):
         enemyX,enemyY,enemyZ=self.animation.position[0],self.animation.position[1],self.animation.position[2]
@@ -306,9 +308,10 @@ class Hostages(Weapon):
     def launchObject(self):
         obj=ThrownEnemy(self.player,position=self.player.playerCamera.camera_pivot.world_position,rotation=self.player.playerCamera.camera_pivot.world_rotation)
         obj.visible=True
-        obj.angle=self.player.playerCamera.camera_pivot.world_rotation[0]
-        obj.MHvi=5 #5 #launch force (1=90)
-        Objects.Physical.parabolicMovement(obj)
+        #get the acceleration
+        acceleration=Objects.Physical.get_acceleration(self.player.pushForce,self.mass)
+        obj.velocity_parabolic_mov = (camera.forward + Vec3(0,0,0)) * acceleration 
+
 
     def update(self):
         #----------------old event
@@ -456,6 +459,9 @@ class ThrownEnemy(BulletDamage):
         'sprite/enemy/thrown/nurse.png',
     ]
     rep=2
+
+    #physical
+    mass=34
 
     def createParticle(self):
         for i in range(40):

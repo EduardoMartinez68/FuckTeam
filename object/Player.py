@@ -1,7 +1,8 @@
 from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
+from engine.script import Draw
 from object import Weapon 
-from script import Objects, Draw
+from engine.script import Objects
 
 class Player(Objects.Object3D):
     sprite_interface='interface/interface'
@@ -33,7 +34,7 @@ class Player(Objects.Object3D):
     dash=True
     timeDash=30
     boostDash=16
-
+    pushForce=4008
 
     alarm=[timeDodge,timeFatality] 
 

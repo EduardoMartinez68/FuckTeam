@@ -1,7 +1,19 @@
 from ursina import * 
-from script import PhysicalWater as pw
+from engine.script import PhysicalWater as pw
 
 import math
+
+def gravity2(self):
+    height=self.scale[1]/2
+    ray = raycast(self.world_position, self.down, ignore=(self,self.animation),distance=height+self.gravity,debug=False)
+    if not ray.hit:
+        self.vspeed+=self.gravity
+
+        velocityX=Vec3(0)
+        velocityX+=Vec3(0,-1,0) * time.dt * self.gravity
+        self.position += (velocityX + Vec3(0,-self.vspeed,0)) * time.dt
+    else:
+        self.velocity = Vec3(0,0,0)
 
 def gravity(self):
     height=self.scale[1]/2 #get the height of the object
@@ -105,6 +117,46 @@ def maximumWidth(self):
         self.vspeed-=1
     else:
         self.vspeed=0
+
+#-----------new
+def get_acceleration(f,m):
+    return f/m 
+
+def get_final_height(vi,g,angle):
+    return ((vi**2)*sin(angle**2))/(2*g)
+
+def get_final_x(vi,angle):
+    angle= 360-angle if angle>0 else angle*-1
+    angle=math.radians(angle)
+    return abs(vi*cos(angle))*2
+    #return abs(vi*cos(angle))*1.75
+
+def get_maximum_width(vo,angle,g):
+    ov=37.5
+    if abs(angle)<ov:
+        #angle=90-angle if angle>0 else 90+angle 
+        return 1
+    else:
+        angle=90-angle if angle>0 else angle*-1#90+angle 
+
+    angle=math.radians(angle)
+    return ((vo**2)*(sin(2*angle)))/g
+
+def parabolic_mov(self):
+    #we will watch if the object is collision with other object
+    hit_info=self.intersects()
+    if hit_info:
+        self.velocity = Vec3(0,0,0)
+        return
+    
+    #if the object not is collision so we will create a parabolic mov
+    self.velocity_parabolic_mov = lerp(self.velocity_parabolic_mov, Vec3(0), time.dt)
+    self.velocity_parabolic_mov -= lerp(self.velocity_parabolic_mov, Vec3(0), time.dt)*self.hspeed
+    self.position += (self.velocity_parabolic_mov) * time.dt
+
+    
+
+
 
 #----water
 def gravityWater(self):

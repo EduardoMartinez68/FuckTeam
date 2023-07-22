@@ -1,5 +1,5 @@
 from ursina import *
-from script import Physical
+from engine.script import Physical
 class Npc(Entity):
     block=1
     scale=(1,1,1)
